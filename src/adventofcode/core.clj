@@ -1,11 +1,6 @@
 (ns adventofcode.core
   (:require [clojure.string :as str]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
-  
 (defn parse-int [s]
  (Integer. (re-find #"\d+" s)))  
 
