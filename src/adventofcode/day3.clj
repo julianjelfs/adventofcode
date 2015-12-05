@@ -17,14 +17,11 @@
 
 (def moves {\^ north \v south \> east \< west})
 
-(defn process-instructions [pos instructions visited]
-  (if (empty? instructions)
-    visited
-    (let [[h & t] instructions
-          next-pos ((get moves h) pos)]
-      (process-instructions next-pos t (conj visited next-pos)))))
-
 (defn houses-visited []
-  (let [visited (process-instructions [0 0] inp #{[0 0]})]
-    (count visited)))
-  
+    (count (loop [pos [0 0] instructions inp visited #{[0 0]}]
+      (if (empty? instructions)
+        visited
+        (let [[h & t] instructions
+              next-pos ((get moves h) pos)]
+          (recur next-pos t (conj visited next-pos)))))))
+
