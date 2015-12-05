@@ -14,11 +14,19 @@
        c (* 2 h l)
        d (/ (min a b c) 2)]
   (+ a b c d)))
+
+(defn ribbon [[l w h]]
+  (let [bow (* l w h)
+        [a b] (sort [l w h])]
+    (+ bow (* 2 a) (* 2 b))))
   
-(defn parse-input []
+(defn parse-input [f]
   (let [lines (str/split-lines (slurp "src/adventofcode/day2"))]
-    (map (comp surface-area parse-dimensions) lines)))
+    (map (comp f parse-dimensions) lines)))
   
 (defn total []
- (reduce + (parse-input))) 
+ (reduce + (parse-input surface-area))) 
+
+(defn total-ribbon []
+  (reduce + (parse-input ribbon)))
  
