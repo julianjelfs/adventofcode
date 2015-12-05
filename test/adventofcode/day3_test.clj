@@ -4,6 +4,6 @@
 
 (deftest test-houses-visited
  (testing "how many houses visited"
-  (is (= 2081 (houses-visited)))))
+  (is (= 2341 (houses-visited)))))
   
 
