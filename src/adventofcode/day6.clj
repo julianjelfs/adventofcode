@@ -17,23 +17,25 @@
   (let [row (vec (repeat 1000 :off))]
     (vec (repeat 1000 row))))
 
+;;this is not dealing with toggling
+;;I think that's the only thing that's wrong
 (defn apply-instructions [i g]
   (reduce (fn [g [k v]]
             (assoc-in g k v)) g i))
 
+(def lines (str/split-lines (slurp "src/adventofcode/day6")))
 
 (defn parse-input []
-  (let [lines (str/split-lines (slurp "src/adventofcode/day6"))]
-    (loop [[line & the-rest] lines g grid]
-      (if (empty? the-rest)
-        (count  (filter (fn [state] (= state :on)) (flatten grid)))
-        (let [on (re-find (re-matcher on-re line))
-              off (re-find (re-matcher off-re line))
-              toggle (re-find (re-matcher toggle-re line))
-              instructions (cond
-                             on (map-match :on on)
-                             off (map-match :off off)
-                             toggle (map-match :toggle toggle)
-                             :else nil)]
-          (recur the-rest (apply-instructions instructions g)))))))
+  (loop [[line & the-rest] lines g grid]
+    (if (empty? the-rest)
+      (count  (filter (fn [state] (= state :on)) (flatten g)))
+      (let [on (re-find (re-matcher on-re line))
+            off (re-find (re-matcher off-re line))
+            toggle (re-find (re-matcher toggle-re line))
+            instructions (cond
+                           on (map-match :on on)
+                           off (map-match :off off)
+                           toggle (map-match :toggle toggle)
+                           :else nil)]
+        (recur the-rest (apply-instructions instructions g))))))
 
