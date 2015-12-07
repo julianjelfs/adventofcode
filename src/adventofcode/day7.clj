@@ -1,6 +1,12 @@
 (ns adventofcode.day7
   (:require [clojure.string :as str]))
 
+(defn parse-int [s]
+ (Integer. (re-find #"\d+" s)))  
+
+(defn isnum? [s]
+  (re-find #"^\d+$", s))
+
 (def lines (str/split-lines (slurp "src/adventofcode/day7")))
 
 (def ops {:AND bit-and
@@ -9,27 +15,40 @@
           :RSHIFT bit-shift-right
           :NOT bit-not})
 
-;;strategy is to create a map of operations then just incrementally fill them in
-;; { key [operation & args] }
-;; { :b [123]
-;;   :c [bit-and :b 456]
-;;   :d [bit-shift-left :c 3] }
-;; when an op contains no keywords evaluate it:
-;; (eval (seq (:b ops)))
-;; to find value of we recursively find the value of all of it's arguments and then eval
+(defn keywordise [parts]
+  (map #(if (isnum? %) (parse-int %) (keyword %)) parts))
 
 (defn split-op [op]
-  
-  )
+  (let [parts (keywordise (str/split op #" "))
+        [f s t] parts]
+    (condp = (count parts)
+      1 [f]
+      2 [(f ops) s]
+      3 [(s ops) f t]
+      [])))
 
-(defn parse-line [line]
-  (let [[op target] (str/split line #" -> ")
-        [func args] (split-op op)]
-    [func args target]))
+(defn parse-line [agg line]
+  (let [[op target] (str/split line #" -> ")]
+    (assoc agg (keyword target) (split-op op))))
+
+(def expressions (reduce parse-line {} lines))
+
+(defn eval-expr [expr]
+  (condp = (count expr)
+    1 (first expr)
+    (eval (seq expr))))
+
+(def resolved (atom {}))
 
 (defn value-of [wire]
-  (let [parsed (map parse-line lines)])
-  (loop [the-rest lines wv wire-values]
-    (if ())
-    )  
-  )
+  (if (wire @resolved)
+    (wire @resolved)
+    (let [expr (wire expressions)
+          incomplete (some keyword? expr)]
+      (if incomplete
+        (let [filled (map (fn [e]
+                            (if (keyword? e)
+                              (value-of e)
+                              e)) expr)]
+          (swap! resolved assoc wire (eval-expr filled)))
+        (swap! resolved assoc wire  (eval-expr expr))))))
