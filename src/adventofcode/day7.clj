@@ -38,6 +38,7 @@
     1 (first expr)
     (eval (seq expr))))
 
+;;yuck - not sure how to do it without this
 (def resolved (atom {}))
 
 (defn value-of [wire]
@@ -50,5 +51,6 @@
                             (if (keyword? e)
                               (value-of e)
                               e)) expr)]
-          (swap! resolved assoc wire (eval-expr filled)))
-        (swap! resolved assoc wire  (eval-expr expr))))))
+          (wire (swap! resolved assoc wire (eval-expr filled))))
+        (wire (swap! resolved assoc wire  (eval-expr expr)))))))
+

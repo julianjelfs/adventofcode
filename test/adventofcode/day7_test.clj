@@ -4,5 +4,5 @@
 
 (deftest test-value-of-a
   (testing "final value of a"
-    (is (= ??? (value-of :a)))))
+    (is (= 2797 (value-of :a)))))
 
