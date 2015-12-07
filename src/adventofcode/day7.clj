@@ -38,12 +38,9 @@
     1 (first expr)
     (eval (seq expr))))
 
-;;yuck - not sure how to do it without this
-(def resolved (atom {}))
+(declare value-of)
 
-(defn value-of [wire]
-  (if (wire @resolved)
-    (wire @resolved)
+(defn real-value-of [wire]
     (let [expr (wire expressions)
           incomplete (some keyword? expr)]
       (if incomplete
@@ -51,6 +48,7 @@
                             (if (keyword? e)
                               (value-of e)
                               e)) expr)]
-          (wire (swap! resolved assoc wire (eval-expr filled))))
-        (wire (swap! resolved assoc wire  (eval-expr expr)))))))
+          (eval-expr filled))
+        (eval-expr expr))))
 
+(def value-of (memoize real-value-of))
