@@ -25,9 +25,7 @@
                 (= v :toggle) (assoc-in g k (+ 2 curr))
                 (= v :on) (assoc-in g k (inc curr))
                 (= v :off) (if (> curr 0) (assoc-in g k (dec curr)) g) 
-                :else g
-                )
-              )) g i))
+                :else g))) g i))
 
 (def lines (str/split-lines (slurp "src/adventofcode/day6")))
 
