@@ -15,22 +15,26 @@
     [[x y] k]))
 
 (def grid 
-  (let [row (vec (repeat 1000 :off))]
+  (let [row (vec (repeat 1000 0))]
     (vec (repeat 1000 row))))
 
 (defn apply-instructions [i g]
   (reduce (fn [g [k v]]
             (let [curr (get-in g k)]
-              (if (= v :toggle)
-                (assoc-in g k (curr opposite))
-                (assoc-in g k v)))) g i))
+              (cond 
+                (= v :toggle) (assoc-in g k (+ 2 curr))
+                (= v :on) (assoc-in g k (inc curr))
+                (= v :off) (if (> curr 0) (assoc-in g k (dec curr)) g) 
+                :else g
+                )
+              )) g i))
 
 (def lines (str/split-lines (slurp "src/adventofcode/day6")))
 
 (defn parse-input []
   (loop [the-rest lines g grid]
     (if (empty? the-rest)
-      (count  (filter (fn [state] (= state :on)) (flatten g)))
+      (reduce + (flatten g))
       (let [line (first the-rest)
             on (re-find (re-matcher on-re line))
             off (re-find (re-matcher off-re line))
