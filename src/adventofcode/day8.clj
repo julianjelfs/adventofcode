@@ -18,8 +18,13 @@
 (defn characters-in-memory [s]
   (count (parse-line s)))
 
-(defn encode [s]
-  s)
+(defn encode [l]
+  (reduce + 2
+          (map #(condp = %
+                  \" 2
+                  \\ 2
+                  1)
+               l)))
 
 (defn total []
   (let [res  (reduce (fn [agg v]
