@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [adventofcode.day9 :refer :all]))
 
-(deftest test-value-of-a
-  (testing "final value of a"
-    (is (= 1375 (total)))))
+(deftest test-shortest
+  (testing "shortest value"
+    (is (= 898 (shortest)))))
 
