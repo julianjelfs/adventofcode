@@ -5,5 +5,12 @@
 (deftest test-next-candidate
   (testing "getting the next candidate"
     (is (= "abcdefh" (next-candidate "abcdefg")))
-    (is (= "abdeaaa" (next-candidate "abcdzzz")))))
+    (is (= "abceaaa" (next-candidate "abcdzzz")))))
 
+(deftest test-two-pairs
+  (testing "contains two pairs"
+    (is (= true (contains-two-pairs? "aaabbc")))
+    (is (= false (contains-two-pairs? "asdfghjturidd")))
+    (is (= false (contains-two-pairs? "aabnmaabnmaa")))
+    (is (= false (contains-two-pairs? "qwertyuhjk")))
+    (is (= true (contains-two-pairs? "123fdhhasasdppsdnn")))))

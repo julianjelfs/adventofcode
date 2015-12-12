@@ -16,8 +16,14 @@
 (defn contains-straight? [candidate]
   true)
 
+(defn longer-than-one? [col]
+  (> (count col) 1))
+
+;;this might not be good enough because "aa" and "aaa" will not be considered duplicates
 (defn contains-two-pairs? [candidate]
-  true)
+  (let [p (partition-by identity candidate)
+        de-duped (into #{} (filter longer-than-one? p))]
+  (> (count de-duped) 1)))
 
 (defn candidate-valid? [candidate]
   (and 
