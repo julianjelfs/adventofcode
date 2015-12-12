@@ -14,3 +14,15 @@
     (is (= false (contains-two-pairs? "aabnmaabnmaa")))
     (is (= false (contains-two-pairs? "qwertyuhjk")))
     (is (= true (contains-two-pairs? "123fdhhasasdppsdnn")))))
+
+(deftest test-contains-straight
+  (testing "contains straight"
+    (is (= true (contains-straight? "acbdefg")))
+    (is (= true (contains-straight? "jhdfhijbdfg")))
+    (is (= false (contains-straight? "abxjtikshe")))
+    (is (= false (contains-straight? "abdeghjk")))))
+
+(deftest test-next-password
+  (testing "get the next password"
+    (is (= "cqjxxyzz" (next-password "cqjxjnds")))
+    (is (= "cqkaabcc" (next-password "cqjxxyzz")))))
