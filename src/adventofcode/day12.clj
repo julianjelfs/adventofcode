@@ -5,9 +5,16 @@
 
 (def doc (json/read-str (slurp "src/adventofcode/day12.txt")))
 
+(defn no-red [doc]
+  (w/prewalk (fn [n]
+               (if (map? n)
+                 (if (some #(= "red" %) (vals n)) 
+                   {}
+                   n)
+                 n)) doc))
 
 (defn total []
   (let [t (atom 0)]
-    (w/postwalk #(if (number? %) (swap! t + %) %) doc)
+    (w/prewalk #(if (number? %) (swap! t + %) %) (no-red doc))
     @t))
 
