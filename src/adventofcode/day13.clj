@@ -1,5 +1,6 @@
 (ns adventofcode.day13
   (:require [clojure.string :as str]
+            [clojure.set :as set]
             [clojure.math.combinatorics :as combo]))
 
 (defn parse-int [s]
@@ -9,9 +10,9 @@
 
 (def people 
   "get the distinct set of people"
-  (reduce (fn [people l]
-            (conj people (first (str/split l #" "))) 
-            ) #{} lines))
+  (conj (reduce (fn [people l]
+            (conj people (keyword (first (str/split l #" ")))) 
+            ) #{} lines) :Julian))
 
 (def combos 
   "calculate all of the possible combinations"
@@ -29,11 +30,20 @@
                   person (ka d)]
               (assoc d ka (assoc person kb (op (parse-int n)))))) {} lines))
 
-(defn happines-level 
+(defn happiness-level 
   "calculate happiness level for a permutation"
   [combo]
-  )
+  (let [res (reduce (fn [agg p]
+                      (let [prev (:prev agg)]
+                        (if (or (= :Julian p) (= prev :Julian))
+                          (assoc agg :prev p)
+                          (let [t (:total agg)
+                                r->l (get-in relations [p prev])
+                                l->r (get-in relations [prev p])]
+                            (assoc agg :prev p :total (+ t r->l l->r)))))
+                      ) {:prev (last combo) :total 0} combo)]
+    (:total res)))
 
 
 (defn best-combination []
-  (apply min (map happiness-level combos)))
+  (apply max (map happiness-level combos)))
