@@ -17,6 +17,26 @@
 
 ;; { :rudolph {:speed 22 :stamina 8 :rest 165}}
 
-(defn distance [reindeer seconds]
-   
-  )
+(defn distance [seconds reindeer]
+  (let [r (reindeer reindeers)
+        stamina (:stamina r)
+        resting (:rest r)
+        speed (:speed r)
+        ticks (flatten (repeatedly #(vec [stamina resting])))]
+    (loop [elapsed 0
+           moving true
+           countdown (first ticks)
+           next-ticks (rest ticks)
+           travelled 0]
+      (let [counting (> countdown 1)]
+        (if (= elapsed seconds)
+          travelled
+          (recur 
+            (inc elapsed)
+            (if counting moving (not moving))
+            (if counting (dec countdown) (first next-ticks))
+            (if counting next-ticks (rest next-ticks))
+            (if moving (+ speed travelled) travelled)))))))
+
+(defn max-distance [n]
+  (apply max (map (partial distance n) (keys reindeers))))
