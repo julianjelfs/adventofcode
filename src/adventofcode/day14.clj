@@ -2,41 +2,34 @@
   (:require [clojure.string :as str]
             [clojure.set :as set]))
 
-(defn parse-int [s]
- (Integer. (re-find #"\d+" s)))  
-
 (def lines (str/split-lines (slurp "src/adventofcode/day14.txt")))
 
-(def reindeers 
-  "build a map of reindeer stats"
-  (reduce (fn [agg l]
-            (let [[r _ _ s _ _ st _ _ _ _ _ _ rt _] (str/split l #" ")]
-              (assoc agg (keyword r) {:speed (parse-int s) 
-                                      :stamina (parse-int st) 
-                                      :rest (parse-int rt)}))) {} lines))
+(defn parse-line [l]
+  (map read-string (re-seq #"\d+" l)))
 
-;; { :rudolph {:speed 22 :stamina 8 :rest 165}}
+(def reindeer (map parse-line lines))
 
-(defn distance [seconds reindeer]
-  (let [r (reindeer reindeers)
-        stamina (:stamina r)
-        resting (:rest r)
-        speed (:speed r)
-        ticks (flatten (repeatedly #(vec [stamina resting])))]
-    (loop [elapsed 0
-           moving true
-           countdown (first ticks)
-           next-ticks (rest ticks)
-           travelled 0]
-      (let [counting (> countdown 1)]
-        (if (= elapsed seconds)
-          travelled
-          (recur 
-            (inc elapsed)
-            (if counting moving (not moving))
-            (if counting (dec countdown) (first next-ticks))
-            (if counting next-ticks (rest next-ticks))
-            (if moving (+ speed travelled) travelled)))))))
+(defn distance [[sp st rst] seconds]
+  (let [interval (+ st rst)
+        last-interval (rem seconds interval)]
+    (+ (* st sp (int (/ seconds interval)))
+       (if (> st last-interval)
+         (* sp last-interval)
+         (* sp st)))))
 
-(defn max-distance [n]
-  (apply max (map (partial distance n) (keys reindeers))))
+(defn furthest []
+  (reduce max (map #(distance % 2503) reindeer)))
+
+(defn winners [reindeer seconds]
+  (let [res (apply merge-with concat
+                   (map
+                    #(hash-map (distance % seconds) [%])
+                    reindeer))]
+    (get res (apply max (keys res)))))
+
+(defn winning-points []
+  (reduce max
+          (vals
+            (frequencies
+              (mapcat (partial winners reindeer)
+                      (range 1 (inc 2503)))))))
