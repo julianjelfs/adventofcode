@@ -18,23 +18,16 @@
         d (range (inc (- total a b c)))]
     [a b c d]))
 
-(defn aspect-val [aspect spoons]
+(defn aspect-val [spoons aspect]
   (max 0 (* aspect spoons)))
 
-(defn ingredient-score [ingredient spoons]
-  (let [[cap dur flav txt _] (ingredient ingredients)]
-    ;this looks like a lot like a reduce
-    (* (aspect-val cap spoons)
-       (aspect-val dur spoons)
-       (aspect-val flav spoons)
-       (aspect-val txt spoons))))
+(defn ingredient-score [spoons ingredient]
+    (map (partial aspect-val spoons) (ingredient ingredients)))
 
 (defn recipe-score [[sp pb fr sg]]
-  ;this also looks a lot like a reduce
-  (+ (ingredient-score :Sprinkles sp)
-     (ingredient-score :PeanutButter pb)
-     (ingredient-score :Frosting fr)
-     (ingredient-score :Sugar sg)))
+  (->> (map (partial ingredient-score sp) [:Sprinkles :PeanutButter :Frosting :Sugar])
+       (reduce #(map + %1 %2))
+       (reduce *)))
 
 (defn best-recipe []
   (apply max (map recipe-score (combos 100))))
