@@ -19,14 +19,15 @@
     [a b c d]))
 
 (defn aspect-val [spoons aspect]
-  (max 0 (* aspect spoons)))
+  (* aspect spoons))
 
 (defn ingredient-score [spoons ingredient]
-    (map (partial aspect-val spoons) (ingredient ingredients)))
+    (map (partial aspect-val spoons) (take 4 (ingredient ingredients))))
 
-(defn recipe-score [[sp pb fr sg]]
-  (->> (map (partial ingredient-score sp) [:Sprinkles :PeanutButter :Frosting :Sugar])
+(defn recipe-score [ing]
+  (->> (map ingredient-score ing (keys ingredients))
        (reduce #(map + %1 %2))
+       (map #(max 0 %))
        (reduce *)))
 
 (defn best-recipe []
