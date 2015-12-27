@@ -22,13 +22,15 @@
   (* aspect spoons))
 
 (defn ingredient-score [spoons ingredient]
-    (map (partial aspect-val spoons) (take 4 (ingredient ingredients))))
+    (map (partial aspect-val spoons) (ingredient ingredients)))
 
 (defn recipe-score [ing]
   (->> (map ingredient-score ing (keys ingredients))
        (reduce #(map + %1 %2))
-       (map #(max 0 %))
-       (reduce *)))
+       (map #(max 0 %))))
 
 (defn best-recipe []
-  (apply max (map recipe-score (combos 100))))
+  (let [scores (map recipe-score (combos 100))
+        calorie-matches (filter #(= (last %) 500) scores)
+        totals (map #(reduce * (take 4 %)) calorie-matches)]
+    (apply max totals)))
